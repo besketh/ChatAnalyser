@@ -25,7 +25,7 @@ public class Input {
         int currentLineNumber = 0;
 
         try {
-            String strCurrentLine="";
+            String strCurrentLine = "";
 
             objReader = new BufferedReader(new FileReader(newPath));
 
@@ -37,36 +37,42 @@ public class Input {
 
                     //trim x chars from start of line
 
-                    strCurrentLine = strCurrentLine.substring(checkLineType(strCurrentLine)+6);
+                    if ((checkLineType(strCurrentLine) + 6 < strCurrentLine.length())) {
+                        strCurrentLine = strCurrentLine.substring(checkLineType(strCurrentLine) + 6);
+                    }
 
-                    //if line starts with name parameter then assign string to current line of reader
-                    if (strCurrentLine.substring(0, name.length()).toLowerCase().equals(name.toLowerCase())) {
+                    if (!(checkLineType(strCurrentLine) == 0)) {
 
-                        strCurrentLine = processLineForTokenizer(name, strCurrentLine);
 
-                        //create new tokenizer stringTokenizer of the line
-                        StringTokenizer stringTokenizer = new StringTokenizer(strCurrentLine, " -;.:^`!/{}*+?\"\\&%$#=,<>'¿¡()[]");
+                        //if line starts with name parameter then assign string to current line of reader
+                        if (strCurrentLine.substring(0, name.length()).toLowerCase().equals(name.toLowerCase())) {
 
-                        int remainingTokenCount = stringTokenizer.countTokens();
+                            strCurrentLine = processLineForTokenizer(name, strCurrentLine);
 
-                        String strCurrentToken ="";
-                        if (!(remainingTokenCount == 0)){
-                            //assign next token to variable
-                            strCurrentToken = stringTokenizer.nextToken();
+                            //create new tokenizer stringTokenizer of the line
+                            StringTokenizer stringTokenizer = new StringTokenizer(strCurrentLine, " -;.:^`!/{}*+?\"\\&%$#=,<>'¿¡()[]");
 
-                            //reduce given line's remaining tokens
-                            remainingTokenCount--;
-                        }
+                            int remainingTokenCount = stringTokenizer.countTokens();
 
-                        //while there's still tokens
-                        while (remainingTokenCount > 0) {
-                            tokenFrequencyHashMap = addTokensToHashmap(tokenFrequencyHashMap, strCurrentToken);
+                            String strCurrentToken = "";
+                            if (!(remainingTokenCount == 0)) {
+                                //assign next token to variable
+                                strCurrentToken = stringTokenizer.nextToken();
 
-                            //assign next token to variable
-                            strCurrentToken = stringTokenizer.nextToken();
+                                //reduce given line's remaining tokens
+                                remainingTokenCount--;
+                            }
 
-                            //reduce given line's remaining tokens
-                            remainingTokenCount--;
+                            //while there's still tokens
+                            while (remainingTokenCount > 0) {
+                                tokenFrequencyHashMap = addTokensToHashmap(tokenFrequencyHashMap, strCurrentToken);
+
+                                //assign next token to variable
+                                strCurrentToken = stringTokenizer.nextToken();
+
+                                //reduce given line's remaining tokens
+                                remainingTokenCount--;
+                            }
                         }
                     }
                 }
@@ -121,12 +127,12 @@ public class Input {
         Scanner file;
         PrintWriter writer;
 
-        String newPath = path.substring(0,path.length()-4)+"Mod.txt";
+        String newPath = path.substring(0, path.length() - 4) + "Mod.txt";
 
         try {
 
             file = new Scanner(new File(path));
-            writer = new PrintWriter(path.substring(0,path.length()-4)+"Mod.txt");
+            writer = new PrintWriter(path.substring(0, path.length() - 4) + "Mod.txt");
 
             while (file.hasNext()) {
                 String line = file.nextLine();
@@ -135,6 +141,7 @@ public class Input {
                     writer.write("\n");
                 }
             }
+            writer.write("fin");
             file.close();
             writer.close();
 
@@ -148,10 +155,13 @@ public class Input {
 
     public static int checkLineType(String input) {
 
+        int end = 13;
+
+        if (input.length() < 13) end = input.length();
+
         int locationOfFirstColon = 0;//if 0, skip line
-        for (int i = 0; i<13;i++)
-        {
-            if (input.charAt(i)==':') locationOfFirstColon=i;
+        for (int i = 0; i < end; i++) {
+            if (input.charAt(i) == ':') locationOfFirstColon = i;
         }
 
         return locationOfFirstColon;
@@ -176,7 +186,7 @@ public class Input {
                 if (currentLineNumber > 0) {
 
                     int lineType = checkLineType(strCurrentLine);
-                    int nameCharStartIndex = lineType+6;
+                    int nameCharStartIndex = lineType + 6;
 
                     String tempString = strCurrentLine.substring(nameCharStartIndex, strCurrentLine.length());
                     CharSequence c = ":";

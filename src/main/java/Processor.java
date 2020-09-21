@@ -7,6 +7,7 @@ public class Processor {
         List<ChatterTokenFreqData> chatterTokenFreqDataList = new ArrayList<>();
         for (int i = 0; i < chatters.size(); i++) {
             String name = chatters.get(i);
+
             ChatterTokenFreqData chatterTokenFreqData = new ChatterTokenFreqData(name, Input.convertWhatsappChatToTokenFreqHashMap(path, name, 17, 1));
             chatterTokenFreqDataList.add(chatterTokenFreqData);
         }
