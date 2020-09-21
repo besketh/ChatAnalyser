@@ -8,7 +8,7 @@ public class Main {
     public static void main(String[] args) {
 
 
-        String path = ("src/main/java/ChatTest.txt");
+        String path = ("src/main/java/TestCouncil.txt");
 
 
         System.out.println("Chatters detected: " + Input.detectChatterNames(path).toString());

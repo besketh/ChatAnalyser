@@ -1,10 +1,7 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.StringTokenizer;
+
+import java.io.*;
+import java.util.*;
+import java.util.logging.Logger;
 
 public class Input {
     /**
@@ -19,6 +16,8 @@ public class Input {
                                                                                        int xCharsToTrim,
                                                                                        int xLinesToSkip) {
 
+        String newPath = removeEmptyLines(path);
+
         //New hash map for storing a frequency for each token (word)
         LinkedHashMap<String, Integer> tokenFrequencyHashMap = new LinkedHashMap<String, Integer>();
 
@@ -26,9 +25,9 @@ public class Input {
         int currentLineNumber = 0;
 
         try {
-            String strCurrentLine;
+            String strCurrentLine="";
 
-            objReader = new BufferedReader(new FileReader(path));
+            objReader = new BufferedReader(new FileReader(newPath));
 
             //while theres still lines to read, assign the next line to the strCurrentLine variable
             while ((strCurrentLine = objReader.readLine()) != null && strCurrentLine.length() > 1) {
@@ -37,7 +36,8 @@ public class Input {
                 if (currentLineNumber > xLinesToSkip - 1) {
 
                     //trim x chars from start of line
-                    strCurrentLine = strCurrentLine.substring(xCharsToTrim - 1, strCurrentLine.length());
+
+                    strCurrentLine = strCurrentLine.substring(checkLineType(strCurrentLine)+6);
 
                     //if line starts with name parameter then assign string to current line of reader
                     if (strCurrentLine.substring(0, name.length()).toLowerCase().equals(name.toLowerCase())) {
@@ -49,11 +49,14 @@ public class Input {
 
                         int remainingTokenCount = stringTokenizer.countTokens();
 
-                        //assign next token to variable
-                        String strCurrentToken = stringTokenizer.nextToken();
+                        String strCurrentToken ="";
+                        if (!(remainingTokenCount == 0)){
+                            //assign next token to variable
+                            strCurrentToken = stringTokenizer.nextToken();
 
-                        //reduce given line's remaining tokens
-                        remainingTokenCount--;
+                            //reduce given line's remaining tokens
+                            remainingTokenCount--;
+                        }
 
                         //while there's still tokens
                         while (remainingTokenCount > 0) {
@@ -114,6 +117,47 @@ public class Input {
         return tokenFrequency;
     }
 
+    private static String removeEmptyLines(String path) {
+        Scanner file;
+        PrintWriter writer;
+
+        String newPath = path.substring(0,path.length()-4)+"Mod.txt";
+
+        try {
+
+            file = new Scanner(new File(path));
+            writer = new PrintWriter(path.substring(0,path.length()-4)+"Mod.txt");
+
+            while (file.hasNext()) {
+                String line = file.nextLine();
+                if (!line.isEmpty()) {
+                    writer.write(line);
+                    writer.write("\n");
+                }
+            }
+            file.close();
+            writer.close();
+
+            return newPath;
+
+        } catch (FileNotFoundException ex) {
+
+        }
+        return "0";
+    }
+
+    public static int checkLineType(String input) {
+
+        int locationOfFirstColon = 0;//if 0, skip line
+        for (int i = 0; i<13;i++)
+        {
+            if (input.charAt(i)==':') locationOfFirstColon=i;
+        }
+
+        return locationOfFirstColon;
+    }
+
+
     public static List<String> detectChatterNames(String path) {
         int currentLineNumber = 0;
         List<String> chatters = new ArrayList<>();
@@ -123,6 +167,7 @@ public class Input {
         try {
             String strCurrentLine;
 
+
             objReader = new BufferedReader(new FileReader(path));
 
             //while theres still lines to read, assign the next line to the strCurrentLine variable
@@ -130,12 +175,20 @@ public class Input {
                 //ignore x line(s) at the start of the file
                 if (currentLineNumber > 0) {
 
-                    int nameCharStartIndex = 16;
+                    int lineType = checkLineType(strCurrentLine);
+                    int nameCharStartIndex = lineType+6;
+
                     String tempString = strCurrentLine.substring(nameCharStartIndex, strCurrentLine.length());
-                    int nameCharFinishIndex = tempString.indexOf(':');
-                    tempString = tempString.substring(0, nameCharFinishIndex);
-                    if (!chatters.contains(tempString)) {
-                        chatters.add(tempString);
+                    CharSequence c = ":";
+                    if (!tempString.contains(c)) lineType = 0;
+
+                    if (lineType != 0) {
+                        int nameCharFinishIndex = tempString.indexOf(':');
+                        tempString = tempString.substring(0, nameCharFinishIndex);
+
+                        if (!chatters.contains(tempString)) {
+                            chatters.add(tempString);
+                        }
                     }
                     ;
 
