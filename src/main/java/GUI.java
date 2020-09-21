@@ -1,9 +1,7 @@
 import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.util.LinkedHashMap;
 
 public class GUI implements ActionListener {
@@ -60,7 +58,7 @@ public class GUI implements ActionListener {
             label.setText("File Chosen: " + path);
 
             //Input from file to token frequency hashmaps for each person in chat
-            LinkedHashMap<String, Integer> chatter1TokenFreq = Input.convertWhatsappChatToTokenFreqHashMap(path, "Ben", 17, 1);
+            LinkedHashMap<String, Integer> chatter1TokenFreq = Input.convertWhatsappChatToTokenFreqHashMap(path, "Ben", 1);
 
             //Zipf stats
 

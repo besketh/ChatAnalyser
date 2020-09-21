@@ -1,19 +1,16 @@
 
 import java.io.*;
 import java.util.*;
-import java.util.logging.Logger;
 
 public class Input {
     /**
      * @param path         file path
      * @param name         name of person whos chats should be tokenized
-     * @param xCharsToTrim how many characters do you want to trim? (17 chars normally for whatsapp timestamp removal)
      * @param xLinesToSkip how many lines to skip? typically 1 line
      * @return a hash map storing a frequency for each token for a given person in the chat
      */
     public static LinkedHashMap<String, Integer> convertWhatsappChatToTokenFreqHashMap(String path,
                                                                                        String name,
-                                                                                       int xCharsToTrim,
                                                                                        int xLinesToSkip) {
 
         String newPath = removeEmptyLines(path);
@@ -132,7 +129,7 @@ public class Input {
         try {
 
             file = new Scanner(new File(path));
-            writer = new PrintWriter(path.substring(0, path.length() - 4) + "Mod.txt");
+            writer = new PrintWriter(newPath);
 
             while (file.hasNext()) {
                 String line = file.nextLine();
