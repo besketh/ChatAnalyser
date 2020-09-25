@@ -1,6 +1,4 @@
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 public class Main {
@@ -8,8 +6,8 @@ public class Main {
     public static void main(String[] args) {
 
 
-        String path = ("src/main/java/TestCouncil.txt");
-
+        String path = ("src/main/java/FamChat.txt");
+        path = Input.removeEmptyLines(path);
 
         System.out.println("Chatters detected: " + Input.detectChatterNames(path).toString());
         List<String> chatters = Input.detectChatterNames(path);

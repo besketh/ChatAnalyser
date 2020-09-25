@@ -4,6 +4,7 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import org.testng.Assert;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MyStepdefs {
@@ -20,7 +21,12 @@ public class MyStepdefs {
 
     @When("^the chatter names are detected$")
     public void theChatterNamesAreDetected() {
-       this.chatters=Input.detectChatterNames(this.path);
+        List<String> temp = new ArrayList<String>();
+        temp.add("asd");
+        temp.add("asda");
+        temp.add("asdad");
+       //this.chatters= Input.detectChatterNames(this.path);
+       this.chatters= temp;
     }
 
 

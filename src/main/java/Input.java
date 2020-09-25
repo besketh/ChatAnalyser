@@ -1,19 +1,14 @@
-
 import java.io.*;
 import java.util.*;
 
 public class Input {
     /**
-     * @param path         file path
-     * @param name         name of person whos chats should be tokenized
-     * @param xLinesToSkip how many lines to skip? typically 1 line
+     * @param path file path
+     * @param name name of person whos chats should be tokenized
      * @return a hash map storing a frequency for each token for a given person in the chat
      */
     public static LinkedHashMap<String, Integer> convertWhatsappChatToTokenFreqHashMap(String path,
-                                                                                       String name,
-                                                                                       int xLinesToSkip) {
-
-        String newPath = removeEmptyLines(path);
+                                                                                       String name) {
 
         //New hash map for storing a frequency for each token (word)
         LinkedHashMap<String, Integer> tokenFrequencyHashMap = new LinkedHashMap<String, Integer>();
@@ -22,65 +17,57 @@ public class Input {
         int currentLineNumber = 0;
 
         try {
+
             String strCurrentLine = "";
 
-            objReader = new BufferedReader(new FileReader(newPath));
+            objReader = new BufferedReader(new FileReader(path));
 
             //while theres still lines to read, assign the next line to the strCurrentLine variable
-            while ((strCurrentLine = objReader.readLine()) != null && strCurrentLine.length() > 1) {
+            while (((strCurrentLine = objReader.readLine()) != null && strCurrentLine.length() > 1)) {
 
-                //ignore x line(s) at the start of the file
-                if (currentLineNumber > xLinesToSkip - 1) {
+                if (isValidLine(strCurrentLine, name)) {
 
                     //trim x chars from start of line
-
-                    if ((checkLineType(strCurrentLine) + 6 < strCurrentLine.length())) {
-                        strCurrentLine = strCurrentLine.substring(checkLineType(strCurrentLine) + 6);
+                    if ((calculateFirstColonPos(strCurrentLine) + 6 < strCurrentLine.length())) {
+                        strCurrentLine = strCurrentLine.substring(calculateFirstColonPos(strCurrentLine) + 6);
                     }
 
-                    if (!(checkLineType(strCurrentLine) == 0)) {
+                    strCurrentLine = processLineForTokenizer(name, strCurrentLine);
 
+                    //create new tokenizer stringTokenizer of the line
+                    StringTokenizer stringTokenizer = new StringTokenizer(strCurrentLine, " -;.:^`!/{}*+?\"\\&%$#=,<>'¿¡()[]");
 
-                        //if line starts with name parameter then assign string to current line of reader
-                        if (strCurrentLine.substring(0, name.length()).toLowerCase().equals(name.toLowerCase())) {
+                    int remainingTokenCount = stringTokenizer.countTokens();
 
-                            strCurrentLine = processLineForTokenizer(name, strCurrentLine);
+                    String strCurrentToken = "";
+                    if (!(remainingTokenCount == 0)) {
+                        //assign next token to variable
+                        strCurrentToken = stringTokenizer.nextToken();
 
-                            //create new tokenizer stringTokenizer of the line
-                            StringTokenizer stringTokenizer = new StringTokenizer(strCurrentLine, " -;.:^`!/{}*+?\"\\&%$#=,<>'¿¡()[]");
+                        //reduce given line's remaining tokens
+                        remainingTokenCount--;
+                    }
 
-                            int remainingTokenCount = stringTokenizer.countTokens();
+                    //while there's still tokens
+                    while (remainingTokenCount > 0) {
+                        tokenFrequencyHashMap = addTokensToHashmap(tokenFrequencyHashMap, strCurrentToken);
 
-                            String strCurrentToken = "";
-                            if (!(remainingTokenCount == 0)) {
-                                //assign next token to variable
-                                strCurrentToken = stringTokenizer.nextToken();
+                        //assign next token to variable
+                        strCurrentToken = stringTokenizer.nextToken();
 
-                                //reduce given line's remaining tokens
-                                remainingTokenCount--;
-                            }
-
-                            //while there's still tokens
-                            while (remainingTokenCount > 0) {
-                                tokenFrequencyHashMap = addTokensToHashmap(tokenFrequencyHashMap, strCurrentToken);
-
-                                //assign next token to variable
-                                strCurrentToken = stringTokenizer.nextToken();
-
-                                //reduce given line's remaining tokens
-                                remainingTokenCount--;
-                            }
-                        }
+                        //reduce given line's remaining tokens
+                        remainingTokenCount--;
                     }
                 }
-                currentLineNumber++;
             }
-
+            currentLineNumber++;
             //TODO: make error handling better
+
         } catch (
                 IOException e) {
 
             e.printStackTrace();
+
 
         } finally {
 
@@ -94,7 +81,7 @@ public class Input {
         return tokenFrequencyHashMap;
     }
 
-    private static String processLineForTokenizer(String name, String strCurrentLine) {
+    public static String processLineForTokenizer(String name, String strCurrentLine) {
         //convert input to lower case
         strCurrentLine = strCurrentLine.toLowerCase();
 
@@ -108,7 +95,7 @@ public class Input {
         return strCurrentLine;
     }
 
-    private static LinkedHashMap<String, Integer> addTokensToHashmap(LinkedHashMap<String, Integer> tokenFrequency, String stringToken) {
+    public static LinkedHashMap<String, Integer> addTokensToHashmap(LinkedHashMap<String, Integer> tokenFrequency, String stringToken) {
         //if token is already contained within the hashmap
         if (tokenFrequency.containsKey(stringToken))
 
@@ -120,7 +107,7 @@ public class Input {
         return tokenFrequency;
     }
 
-    private static String removeEmptyLines(String path) {
+    public static String removeEmptyLines(String path) {
         Scanner file;
         PrintWriter writer;
 
@@ -150,7 +137,12 @@ public class Input {
         return "0";
     }
 
-    public static int checkLineType(String input) {
+    public static boolean isValidLine(String line, String name) {
+        return line.contains(name + ": ");
+    }
+
+
+    public static int calculateFirstColonPos(String input) {
 
         int end = 13;
 
@@ -166,6 +158,7 @@ public class Input {
 
 
     public static List<String> detectChatterNames(String path) {
+
         int currentLineNumber = 0;
         List<String> chatters = new ArrayList<>();
 
@@ -179,14 +172,14 @@ public class Input {
 
             //while theres still lines to read, assign the next line to the strCurrentLine variable
             while ((strCurrentLine = objReader.readLine()) != null && strCurrentLine.length() > 1) {
+                CharSequence c = ":";
                 //ignore x line(s) at the start of the file
-                if (currentLineNumber > 0) {
+                if (currentLineNumber > 0 && strCurrentLine.contains(c)) {
 
-                    int lineType = checkLineType(strCurrentLine);
+                    int lineType = calculateFirstColonPos(strCurrentLine);
                     int nameCharStartIndex = lineType + 6;
 
                     String tempString = strCurrentLine.substring(nameCharStartIndex, strCurrentLine.length());
-                    CharSequence c = ":";
                     if (!tempString.contains(c)) lineType = 0;
 
                     if (lineType != 0) {
@@ -197,8 +190,6 @@ public class Input {
                             chatters.add(tempString);
                         }
                     }
-                    ;
-
                 }
                 currentLineNumber++;
             }

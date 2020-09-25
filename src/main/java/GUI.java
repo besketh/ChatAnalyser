@@ -58,7 +58,7 @@ public class GUI implements ActionListener {
             label.setText("File Chosen: " + path);
 
             //Input from file to token frequency hashmaps for each person in chat
-            LinkedHashMap<String, Integer> chatter1TokenFreq = Input.convertWhatsappChatToTokenFreqHashMap(path, "Ben", 1);
+            LinkedHashMap<String, Integer> chatter1TokenFreq = Input.convertWhatsappChatToTokenFreqHashMap(path, "Ben");
 
             //Zipf stats
 
