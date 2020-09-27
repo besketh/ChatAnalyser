@@ -1,8 +1,12 @@
-import java.util.*;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 public class Processor {
 
-    public static List<ChatterTokenFreqData> compileChatterTokenFreqData(List<String> chatters, String path) {
+    public static List<ChatterTokenFreqData> compileChatterTokenFreqData(List<String> chatters, String path) throws FileNotFoundException {
 
         List<ChatterTokenFreqData> chatterTokenFreqDataList = new ArrayList<>();
         for (int i = 0; i < chatters.size(); i++) {
@@ -14,9 +18,8 @@ public class Processor {
         return chatterTokenFreqDataList;
     }
 
-
-
     public static LinkedHashMap<String, Zipf> sortByFrequency(LinkedHashMap<String, Integer> tokenFrequencyHashMap, int minFreq) {
+
 
         //assign each frequency in the hashmap to a list element
         List<Integer> listOfFreqs = new ArrayList<>();
@@ -37,23 +40,22 @@ public class Processor {
         int R = 1;
 
         //looping over list of ordered frequencies
-        for (int i = 0; i < listOfFreqs.size(); i++) {
+        for (Integer freqFromOrderedList : listOfFreqs) {
 
-            //orderedFreq at index i
-            int F = listOfFreqs.get(i);
 
             //looping over key-value pairs to find a value that matches the orderedFreq
             for (String token : tokenFrequencyHashMap.keySet()) {
 
-                int frequency = tokenFrequencyHashMap.get(token);
+                int currentTokenFreq = tokenFrequencyHashMap.get(token);
+
 
                 //if value for a given key (token) matches the orderedFreq
                 //AND the token has not already been counted
                 //AND freq is greater than the min freq
-                if (F == frequency && !(tokensAlreadyCounted.contains(token)) && F > minFreq - 1) {
+                if (freqFromOrderedList == currentTokenFreq && !(tokensAlreadyCounted.contains(token)) && freqFromOrderedList > minFreq - 1) {
 
                     //add new zipf data point to "zipfMap" with it's associated token
-                    zipfMap.put(token, new Zipf(R, F));
+                    zipfMap.put(token, new Zipf(R, freqFromOrderedList));
 
                     //add token to list so that it will be ignored when sorting in the next iteration
                     tokensAlreadyCounted.add(token);
@@ -63,10 +65,7 @@ public class Processor {
                 }
             }
         }
-
         return zipfMap;
-
-
     }
 
     public static int countTokens(LinkedHashMap<String, Integer> tokenFrequencyHashMap) {

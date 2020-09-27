@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
 import java.util.LinkedHashMap;
 
 public class GUI implements ActionListener {
@@ -58,7 +59,12 @@ public class GUI implements ActionListener {
             label.setText("File Chosen: " + path);
 
             //Input from file to token frequency hashmaps for each person in chat
-            LinkedHashMap<String, Integer> chatter1TokenFreq = Input.convertWhatsappChatToTokenFreqHashMap(path, "Ben");
+            LinkedHashMap<String, Integer> chatter1TokenFreq = null;
+            try {
+                chatter1TokenFreq = Input.convertWhatsappChatToTokenFreqHashMap(path, "Ben");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
 
             //Zipf stats
 
